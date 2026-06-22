@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Информатика БЖБ онлайн тест</title>
+  <style>
+    :root {
+      --bg: #f5f7f4;
+      --panel: #ffffff;
+      --soft: #eef4f1;
+      --ink: #17211c;
+      --muted: #617169;
+      --line: #d7e0da;
+      --green: #1d8f6f;
+      --green-dark: #105d4a;
+      --blue: #2869a8;
+      --red: #b23a3a;
+      --amber: #9d641f;
+      --shadow: 0 18px 50px rgba(23, 33, 28, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+      background:
+        linear-gradient(180deg, rgba(238,244,241,.94), rgba(245,247,244,1)),
+        repeating-linear-gradient(90deg, rgba(29,143,111,.08) 0 1px, transparent 1px 86px);
+    }
+    button, input, select, textarea { font: inherit; }
+    .app { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 34px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .brand { display: flex; gap: 12px; align-items: center; min-width: 0; }
+    .mark {
+      width: 46px; height: 46px; border-radius: 8px; background: var(--green);
+      color: #fff; display: grid; place-items: center; font-weight: 700;
+      box-shadow: 0 10px 24px rgba(29,143,111,.24); flex: 0 0 auto;
+    }
+    h1 { margin: 0; font-size: 25px; line-height: 1.15; letter-spacing: 0; }
+    .subtitle { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .status { border: 1px solid var(--line); background: rgba(255,255,255,.74); border-radius: 8px; padding: 8px 12px; color: var(--green-dark); font-size: 13px; }
+
+    .modebar {
+      display: flex; gap: 8px; background: var(--soft); border: 1px solid var(--line);
+      border-radius: 8px; padding: 8px; margin-bottom: 18px; overflow-x: auto;
+    }
+    .mode {
+      border: 1px solid transparent; background: transparent; border-radius: 8px;
+      padding: 10px 14px; color: var(--muted); cursor: pointer; white-space: nowrap;
+    }
+    .mode.active { background: #fff; color: var(--ink); border-color: var(--line); font-weight: 700; }
+
+    .grid { display: grid; grid-template-columns: 390px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
+    .left { position: sticky; top: 16px; }
+    .head { padding: 16px 18px; background: var(--soft); border-bottom: 1px solid var(--line); }
+    .head h2 { margin: 0; font-size: 17px; }
+    .head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .form { padding: 18px; display: grid; gap: 14px; }
+    .field { display: grid; gap: 6px; }
+    label { font-size: 13px; color: #33433b; font-weight: 700; }
+    input, select, textarea {
+      width: 100%; border: 1px solid var(--line); background: #fff; color: var(--ink);
+      border-radius: 8px; padding: 10px 11px; outline: none;
+    }
+    textarea { min-height: 108px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,143,111,.14); }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .check {
+      display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line);
+      border-radius: 8px; padding: 10px; background: #fbfcfb;
+    }
+    .check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); box-shadow: none; }
+    .check span { color: var(--muted); font-size: 13px; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn {
+      min-height: 42px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+      background: #fff; color: var(--ink); cursor: pointer; transition: background .12s, border-color .12s, transform .12s;
+    }
+    .btn:hover { background: #f7faf8; border-color: #b8c8c0; }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: var(--green); border-color: var(--green); color: #fff; font-weight: 700; }
+    .btn.primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+    .btn.full { grid-column: 1 / -1; }
+    .btn.danger { color: var(--red); border-color: #efc7c7; }
+    .hidden { display: none !important; }
+
+    .toolbar { display: flex; gap: 10px; justify-content: space-between; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+    .toolbar small { color: var(--muted); font-size: 13px; }
+    .tool-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .mini { min-height: 34px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 7px 10px; cursor: pointer; }
+    .mini:hover { background: #f7faf8; }
+    .tabs { display: flex; gap: 8px; padding: 12px 12px 0; background: var(--soft); border-bottom: 1px solid var(--line); overflow-x: auto; }
+    .tab { border: 1px solid var(--line); border-bottom: none; border-radius: 8px 8px 0 0; background: rgba(255,255,255,.64); padding: 9px 12px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+    .tab.active { background: #fff; color: var(--ink); font-weight: 700; margin-bottom: -1px; }
+    .preview { padding: 20px; min-height: 620px; background: #fff; }
+    .doc { white-space: pre-wrap; font-size: 14px; color: #202722; }
+
+    .student-shell { max-width: 860px; margin: 0 auto; }
+    .start-card, .quiz-card, .result-card { background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
+    .start-body, .quiz-body, .result-body { padding: 20px; }
+    .meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .pill { border: 1px solid var(--line); background: #fbfcfb; border-radius: 8px; padding: 7px 10px; color: var(--muted); font-size: 13px; }
+    .progress { height: 8px; background: #e2e9e5; border-radius: 999px; overflow: hidden; margin: 14px 0; }
+    .progress > div { height: 100%; width: 0; background: var(--green); transition: width .25s ease; }
+    .q-top { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+    .q-text { font-size: 18px; font-weight: 700; margin: 0 0 14px; }
+    .options { display: grid; gap: 10px; }
+    .option {
+      display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line);
+      border-radius: 8px; padding: 11px; cursor: pointer; background: #fff;
+    }
+    .option:hover { background: #f7faf8; }
+    .option input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--green); }
+    .answer-area { width: 100%; min-height: 120px; }
+    .quiz-nav { display: flex; gap: 10px; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; }
+    .codebox { font-family: Consolas, monospace; min-height: 170px; }
+    .score {
+      width: 120px; height: 120px; border-radius: 50%; border: 8px solid #dceee7; display: grid;
+      place-items: center; margin: 0 auto 16px; color: var(--green-dark); font-size: 28px; font-weight: 700;
+    }
+    .review { display: grid; gap: 10px; margin-top: 18px; }
+    .review-item { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: #fbfcfb; }
+    .ok { color: var(--green-dark); font-weight: 700; }
+    .bad { color: var(--red); font-weight: 700; }
+    .manual { color: var(--amber); font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: #33433b; }
+    .toast { position: fixed; right: 18px; bottom: 18px; max-width: min(380px, calc(100% - 36px)); background: var(--ink); color: #fff; border-radius: 8px; padding: 12px 14px; box-shadow: 0 12px 36px rgba(0,0,0,.2); display: none; z-index: 30; font-size: 14px; }
+    .toast.show { display: block; }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .left { position: static; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 520px) {
+      .app { width: min(100% - 20px, 1180px); padding-top: 12px; }
+      .two, .actions { grid-template-columns: 1fr; }
+      h1 { font-size: 21px; }
+      .preview { padding: 14px; }
+      .doc { font-size: 13px; }
+      .q-text { font-size: 16px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .topbar, .modebar, .left, .tabs, .toolbar, .quiz-nav, .tool-actions { display: none; }
+      .app { width: 100%; padding: 0; }
+      .grid { display: block; }
+      .panel, .start-card, .quiz-card, .result-card { box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">БЖБ</div>
+        <div>
+          <h1>Информатика БЖБ онлайн тест</h1>
+          <p class="subtitle">Мұғалім БЖБ құрастырады, оқушы сайттың өзінде орындайды, нәтиже сақталады</p>
+        </div>
+      </div>
+      <div class="status" id="status">Дайын</div>
+    </header>
+
+    <nav class="modebar">
+      <button class="mode active" type="button" data-mode="teacher">Мұғалім құрастыру</button>
+      <button class="mode" type="button" data-mode="student">Оқушы орындау</button>
+      <button class="mode" type="button" data-mode="results">Нәтижелер</button>
+    </nav>
+
+    <section id="teacher-view" class="grid">
+      <aside class="panel left">
+        <div class="head">
+          <h2>БЖБ параметрлері</h2>
+          <p>Деректерді өзгертіп, онлайн тестті жаңартыңыз.</p>
+        </div>
+        <form class="form" id="bjb-form">
+          <div class="two">
+            <div class="field">
+              <label for="grade">Сынып</label>
+              <select id="grade">
+                <option value="5">5-сынып</option>
+                <option value="6">6-сынып</option>
+                <option value="7" selected>7-сынып</option>
+                <option value="8">8-сынып</option>
+                <option value="9">9-сынып</option>
+                <option value="10">10-сынып</option>
+                <option value="11">11-сынып</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="points">Жалпы балл</label>
+              <input id="points" type="number" min="10" max="20" value="15" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="section">Бөлім атауы</label>
+            <input id="section" type="text" value="Python тілінде алгоритмдерді программалау" />
+          </div>
+
+          <div class="field">
+            <label for="objectives">Оқу мақсаттары</label>
+            <textarea id="objectives">7.3.2.1 Python тілінде тармақталған алгоритмдерді жазу
+7.3.3.1 деректер типтерін ажырату</textarea>
+          </div>
+
+          <div class="two">
+            <div class="field">
+              <label for="platform">Формат</label>
+              <select id="platform">
+                <option>Осы сайтта онлайн орындау</option>
+                <option>Google Forms</option>
+                <option>Microsoft Forms</option>
+                <option>OnlineTestPad</option>
+                <option>Quizizz</option>
+                <option>Moodle</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="minutes">Уақыт</label>
+              <input id="minutes" type="number" min="5" max="90" value="20" />
+            </div>
+          </div>
+
+          <label class="check">
+            <input id="programming" type="checkbox" checked />
+            <span><strong>Python код тапсырмасын қосу</strong><br />Оқушы кодты сайттағы мәтін өрісіне жазады.</span>
+          </label>
+
+          <div class="actions">
+            <button class="btn primary full" type="submit">Тестті жаңарту</button>
+            <button class="btn" type="button" id="sample-btn">Үлгі толтыру</button>
+            <button class="btn" type="button" id="student-open-btn">Оқушы режимі</button>
+            <button class="btn" type="button" id="clear-btn">Тазалау</button>
+          </div>
+        </form>
+      </aside>
+
+      <section class="panel">
+        <div class="tabs">
+          <button class="tab active" type="button" data-doc="full">Толық нұсқа</button>
+          <button class="tab" type="button" data-doc="student">Оқушыға</button>
+          <button class="tab" type="button" data-doc="teacher">Мұғалімге</button>
+        </div>
+        <div class="toolbar">
+          <small id="summary">БЖБ дайын</small>
+          <div class="tool-actions">
+            <button class="mini" type="button" id="copy-btn">Көшіру</button>
+            <button class="mini" type="button" id="download-btn">TXT жүктеу</button>
+            <button class="mini" type="button" id="print-btn">Басып шығару</button>
+          </div>
+        </div>
+        <div class="preview">
+          <div class="doc" id="output"></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="student-view" class="student-shell hidden">
+      <div id="start-screen" class="start-card">
+        <div class="head">
+          <h2>Оқушы тесті</h2>
+          <p id="student-meta">Информатика БЖБ</p>
+        </div>
+        <div class="start-body">
+          <div class="two">
+            <div class="field">
+              <label for="student-name">Оқушының аты-жөні</label>
+              <input id="student-name" type="text" placeholder="Мысалы: Айдана Ержан" maxlength="80" />
+            </div>
+            <div class="field">
+              <label for="student-class">Сыныбы</label>
+              <input id="student-class" type="text" placeholder="Мысалы: 7А" maxlength="20" />
+            </div>
+          </div>
+          <div class="meta-row" id="test-info"></div>
+          <div class="actions" style="margin-top:16px">
+            <button class="btn primary full" type="button" id="start-test-btn">Тестті бастау</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="quiz-card hidden">
+        <div class="head">
+          <h2 id="quiz-title">БЖБ тапсырмалары</h2>
+          <p><span id="quiz-student"></span> <span id="timer"></span></p>
+        </div>
+        <div class="quiz-body">
+          <div class="q-top">
+            <span id="q-count">1/6</span>
+            <span id="q-points">1 балл</span>
+          </div>
+          <div class="progress"><div id="progress"></div></div>
+          <p class="q-text" id="q-text"></p>
+          <div id="answer-box"></div>
+          <div class="quiz-nav">
+            <button class="btn" type="button" id="prev-btn">Алдыңғы</button>
+            <button class="btn" type="button" id="next-btn">Келесі</button>
+            <button class="btn primary" type="button" id="finish-btn">Тестті аяқтау</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="result-card hidden">
+        <div class="head">
+          <h2>Нәтиже</h2>
+          <p id="result-student"></p>
+        </div>
+        <div class="result-body">
+          <div class="score" id="score-circle">0/15</div>
+          <p id="result-text" style="text-align:center"></p>
+          <div class="actions">
+            <button class="btn" type="button" id="again-btn">Қайта тапсыру</button>
+            <button class="btn primary" type="button" id="save-result-btn">Нәтижелерді көру</button>
+          </div>
+          <div class="review" id="review"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="results-view" class="panel hidden">
+      <div class="head">
+        <h2>Оқушылар нәтижесі</h2>
+        <p>Нәтижелер осы браузерде сақталады. Практикалық тапсырмалар мұғалім тексеретін балл ретінде белгіленеді.</p>
+      </div>
+      <div class="toolbar">
+        <small id="result-count">0 нәтиже</small>
+        <div class="tool-actions">
+          <button class="mini" type="button" id="export-results-btn">CSV жүктеу</button>
+          <button class="mini" type="button" id="clear-results-btn">Тазалау</button>
+        </div>
+      </div>
+      <div class="preview">
+        <div id="results-table"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const letters = ['A', 'B', 'C', 'D'];
+    const resultKey = 'informatika_bjb_online_results';
+    let appData = null;
+    let tasks = [];
+    let docs = { full: '', student: '', teacher: '' };
+    let activeDoc = 'full';
+    let current = 0;
+    let answers = [];
+    let timerId = null;
+    let secondsLeft = 0;
+    let latestResult = null;
+
+    const conceptQuestions = [
+      {
+        q: 'Алгоритм дегеніміз не?',
+        options: ['Есепті шешуге арналған нақты қадамдар тізбегі', 'Компьютердің сыртқы құрылғысы', 'Интернеттегі ақпарат көзі', 'Файлды сақтау орны'],
+        ans: 0,
+        key: 'Алгоритм - есепті шешу қадамдарының тізбегі.'
+      },
+      {
+        q: 'Python тілінде бүтін сан типі қалай аталады?',
+        options: ['int', 'float', 'str', 'bool'],
+        ans: 0,
+        key: 'int'
+      },
+      {
+        q: 'Шартты оператор қай кезде қолданылады?',
+        options: ['Бағдарламада таңдау жасау қажет болғанда', 'Тек мәтін шығару үшін', 'Файлды өшіру үшін', 'Компьютерді қосу үшін'],
+        ans: 0,
+        key: 'if операторы шартқа байланысты әртүрлі әрекет орындауға мүмкіндік береді.'
+      },
+      {
+        q: 'Циклдің негізгі қызметі қандай?',
+        options: ['Қайталанатын әрекеттерді орындау', 'Тек бір жол мәтін жазу', 'Файл атауын өзгерту', 'Компьютерді желіге қосу'],
+        ans: 0,
+        key: 'Цикл қайталанатын командаларды орындауға арналған.'
+      }
+    ];
+
+    const el = id => document.getElementById(id);
+
+    function toast(message) {
+      const box = el('toast');
+      box.textContent = message;
+      box.classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => box.classList.remove('show'), 2500);
+    }
+
+    function switchMode(mode) {
+      document.querySelectorAll('.mode').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+      el('teacher-view').classList.toggle('hidden', mode !== 'teacher');
+      el('student-view').classList.toggle('hidden', mode !== 'student');
+      el('results-view').classList.toggle('hidden', mode !== 'results');
+      if (mode === 'student') renderStudentStart();
+      if (mode === 'results') renderResults();
+    }
+
+    function getValues() {
+      const section = el('section').value.trim() || 'Информатика бөлімі';
+      const objectives = el('objectives').value.trim() || 'Оқу мақсаты көрсетілмеген';
+      return {
+        grade: el('grade').value,
+        points: Math.max(10, Math.min(20, Number(el('points').value || 15))),
+        section,
+        objectives,
+        platform: el('platform').value,
+        minutes: Math.max(5, Math.min(90, Number(el('minutes').value || 20))),
+        addProgramming: el('programming').checked || /python|программ|бағдарлам|код|алгоритм|цикл|шарт|if|for|while/i.test(section + ' ' + objectives)
+      };
+    }
+
+    function distributePoints(total, addProgramming) {
+      if (total <= 12) return addProgramming ? [1, 1, 1, 2, 2, 5] : [1, 1, 2, 2, 2, total - 8];
+      if (total <= 16) return addProgramming ? [1, 1, 2, 2, 3, total - 9] : [1, 2, 2, 3, 3, total - 11];
+      return addProgramming ? [1, 2, 2, 3, 4, total - 12] : [2, 2, 3, 3, 4, total - 14];
+    }
+
+    function buildTasks(data) {
+      const pts = distributePoints(data.points, data.addProgramming);
+      const built = conceptQuestions.map((item, index) => ({
+        number: index + 1,
+        type: 'choice',
+        label: 'Көп таңдаулы сұрақ',
+        points: pts[index],
+        text: item.q,
+        options: item.options,
+        ans: item.ans,
+        answer: letters[item.ans],
+        key: item.key,
+        descriptor: 'Дұрыс ұғымды немесе команданың қызметін анықтайды.'
+      }));
+
+      built.push({
+        number: 5,
+        type: 'short',
+        label: 'Қысқа жауап',
+        points: pts[4],
+        text: data.addProgramming ? 'Python тілінде экранға мәтін шығаратын команданы жазыңыз.' : 'Берілген бөлім бойынша негізгі екі терминді жазыңыз.',
+        answer: data.addProgramming ? 'print()' : 'Бөлімге қатысты екі дұрыс термин',
+        aliases: data.addProgramming ? ['print', 'print()', 'print("мәтін")', "print('мәтін')"] : [],
+        key: data.addProgramming ? 'print, print(), print("мәтін")' : 'Мұғалім терминдердің бөлім мазмұнына сәйкестігін тексереді.',
+        descriptor: data.addProgramming ? 'Python-дағы шығару командасын дұрыс жазады.' : 'Бөлім мазмұнына сай терминдерді атайды.'
+      });
+
+      built.push({
+        number: 6,
+        type: 'code',
+        label: 'Практикалық тапсырма',
+        points: pts[5],
+        text: data.addProgramming
+          ? 'Python кодын жазыңыз: екі бүтін сан енгізіледі. Егер бірінші сан екінші саннан үлкен болса, "Бірінші сан үлкен", әйтпесе "Екінші сан үлкен немесе тең" мәтінін шығарыңыз.'
+          : 'Бөлім тақырыбы бойынша қысқа практикалық жұмыс орындаңыз: жағдайға сәйкес шешім ұсынып, қолданылатын құралды және орындалу ретін көрсетіңіз.',
+        answer: data.addProgramming
+          ? 'a = int(input())\nb = int(input())\nif a > b:\n    print("Бірінші сан үлкен")\nelse:\n    print("Екінші сан үлкен немесе тең")'
+          : 'Жауап бөлім мазмұнына, құралды дұрыс таңдауға және әрекеттер ретінің қисындылығына қарай бағаланады.',
+        key: data.addProgramming ? 'a, b енгізу; int қолдану; if a > b шарты; else тармағы; print шығару' : 'Құралды дұрыс таңдау; әрекеттердің реттілігі; нәтижені түсіндіру',
+        descriptor: data.addProgramming ? 'Айнымалыларды енгізеді, шартты операторды қолданады, нәтижені экранға шығарады.' : 'Практикалық жағдайды талдайды, дұрыс құрал таңдайды, әрекет ретін сипаттайды.'
+      });
+
+      return built;
+    }
+
+    function optionsText(options) {
+      return options.map((option, index) => `${letters[index]}. ${option}`).join('\n');
+    }
+
+    function buildDocs(data, builtTasks) {
+      const student = `=== ОҚУШЫҒА АРНАЛҒАН НҰСҚА ===
+
+Пәні: Информатика
+Сынып: ${data.grade}
+Бөлім: ${data.section}
+Оқу мақсаттары:
+${data.objectives}
+Тапсыру форматы: ${data.platform}
+Жалпы балл: ${data.points}
+Уақыт: ${data.minutes} минут
+
+${builtTasks.map(task => `${task.number}. ${task.label} (${task.points} балл)
+${task.text}${task.options ? '\n' + optionsText(task.options) : ''}`).join('\n\n')}`;
+
+      const answerRows = builtTasks.map(task => `${task.number} | ${task.label} | ${task.type === 'choice' ? task.answer : task.key} | ${task.points} балл`).join('\n');
+      const descriptors = builtTasks.map(task => `${task.number}. ${task.descriptor} (${task.points} балл)`).join('\n');
+      const criteria = builtTasks.map(task => {
+        if (task.type === 'code') {
+          return `${task.number}. Практикалық бағалау критерийлері:
+- деректерді дұрыс енгізеді немесе бастапқы жағдайды дұрыс талдайды;
+- қажетті операторды, құралды немесе алгоритмді орынды қолданады;
+- нәтиже шығарады және тапсырма шартына сәйкестігін сақтайды;
+- код немесе жауап түсінікті рәсімделеді.
+Балл: ${task.points}`;
+        }
+        return `${task.number}. Дұрыс жауап берсе - ${task.points} балл, қате немесе бос жауап - 0 балл.`;
+      }).join('\n\n');
+
+      const teacher = `=== МҰҒАЛІМГЕ АРНАЛҒАН НҰСҚА ===
+
+БЖБ паспорты
+Пәні: Информатика
+Сынып: ${data.grade}
+Бөлім: ${data.section}
+Оқу мақсаттары:
+${data.objectives}
+Жалпы балл: ${data.points}
+Уақыт: ${data.minutes} минут
+
+Дұрыс жауаптар кестесі
+№ | Тапсырма түрі | Дұрыс жауап / жауап кілті | Балл
+${answerRows}
+
+Дескрипторлар
+${descriptors}
+
+Бағалау критерийлері
+${criteria}
+
+Автоматты тексеруге болатын жауаптар тізімі
+${builtTasks.map(task => `${task.number}: ${task.type === 'choice' ? task.answer : task.key}`).join('\n')}
+
+Ескерту: практикалық тапсырма сайтта жауап ретінде сақталады, оны мұғалім критерий бойынша қолмен тексереді.`;
+
+      return { student, teacher, full: `${student}\n\n${teacher}` };
+    }
+
+    function generate() {
+      appData = getValues();
+      tasks = buildTasks(appData);
+      docs = buildDocs(appData, tasks);
+      activeDoc = 'full';
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab.dataset.doc === activeDoc));
+      el('output').textContent = docs[activeDoc];
+      el('summary').textContent = `${appData.grade}-сынып, ${appData.points} балл, ${tasks.length} тапсырма, ${appData.minutes} минут`;
+      el('status').textContent = 'Онлайн тест дайын';
+      renderStudentStart();
+      toast('Тест жаңартылды. Оқушы режимінде орындауға болады.');
+    }
+
+    function renderStudentStart() {
+      if (!appData) return;
+      clearInterval(timerId);
+      el('start-screen').classList.remove('hidden');
+      el('quiz-screen').classList.add('hidden');
+      el('result-screen').classList.add('hidden');
+      el('student-meta').textContent = `${appData.grade}-сынып | ${appData.section}`;
+      el('test-info').innerHTML = `
+        <span class="pill">${tasks.length} тапсырма</span>
+        <span class="pill">${appData.points} балл</span>
+        <span class="pill">${appData.minutes} минут</span>
+        <span class="pill">Қысқа жауап автоматты тексеріледі</span>
+        <span class="pill">Практикалық тапсырманы мұғалім қарайды</span>`;
+    }
+
+    function startTest() {
+      const name = el('student-name').value.trim();
+      const klass = el('student-class').value.trim();
+      if (!name) return toast('Оқушының аты-жөнін енгізіңіз.');
+      if (!klass) return toast('Сыныбын енгізіңіз.');
+      current = 0;
+      answers = tasks.map(() => '');
+      secondsLeft = appData.minutes * 60;
+      latestResult = null;
+      el('start-screen').classList.add('hidden');
+      el('quiz-screen').classList.remove('hidden');
+      el('result-screen').classList.add('hidden');
+      el('quiz-title').textContent = appData.section;
+      el('quiz-student').textContent = `${name}, ${klass}`;
+      startTimer();
+      renderQuestion();
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      updateTimer();
+      timerId = setInterval(() => {
+        secondsLeft -= 1;
+        updateTimer();
+        if (secondsLeft <= 0) finishTest(true);
+      }, 1000);
+    }
+
+    function updateTimer() {
+      const m = Math.max(0, Math.floor(secondsLeft / 60));
+      const s = Math.max(0, secondsLeft % 60);
+      el('timer').textContent = `| Уақыт: ${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    function saveCurrentAnswer() {
+      const task = tasks[current];
+      if (!task) return;
+      if (task.type === 'choice') {
+        const checked = document.querySelector('input[name="answer-option"]:checked');
+        answers[current] = checked ? checked.value : '';
+      } else {
+        const area = el('written-answer');
+        answers[current] = area ? area.value : '';
+      }
+    }
+
+    function renderQuestion() {
+      const task = tasks[current];
+      el('q-count').textContent = `${current + 1}/${tasks.length}`;
+      el('q-points').textContent = `${task.points} балл`;
+      el('progress').style.width = `${((current + 1) / tasks.length) * 100}%`;
+      el('q-text').textContent = task.text;
+      if (task.type === 'choice') {
+        el('answer-box').innerHTML = `<div class="options">${task.options.map((option, index) => `
+          <label class="option">
+            <input type="radio" name="answer-option" value="${index}" ${String(answers[current]) === String(index) ? 'checked' : ''} />
+            <span><strong>${letters[index]}.</strong> ${option}</span>
+          </label>`).join('')}</div>`;
+      } else {
+        const cls = task.type === 'code' ? 'answer-area codebox' : 'answer-area';
+        const placeholder = task.type === 'code' ? 'Python кодын осы жерге жазыңыз...' : 'Жауабыңызды жазыңыз...';
+        el('answer-box').innerHTML = `<textarea id="written-answer" class="${cls}" placeholder="${placeholder}"></textarea>`;
+        el('written-answer').value = answers[current] || '';
+      }
+      el('prev-btn').disabled = current === 0;
+      el('next-btn').classList.toggle('hidden', current === tasks.length - 1);
+      el('finish-btn').classList.toggle('hidden', current !== tasks.length - 1);
+    }
+
+    function normalize(text) {
+      return String(text || '').toLowerCase().replace(/\s+/g, '').replace(/[;,.]/g, '');
+    }
+
+    function gradeTest() {
+      let autoScore = 0;
+      let manualPoints = 0;
+      const review = tasks.map((task, index) => {
+        const answer = answers[index];
+        if (task.type === 'choice') {
+          const correct = Number(answer) === task.ans;
+          if (correct) autoScore += task.points;
+          return { number: task.number, status: correct ? 'Дұрыс' : 'Қате', points: correct ? task.points : 0, max: task.points, answer: answer === '' ? 'Жауап жоқ' : letters[Number(answer)], key: task.answer };
+        }
+        if (task.type === 'short') {
+          const accepted = task.aliases.length ? task.aliases.some(item => normalize(answer).includes(normalize(item))) : Boolean(answer.trim());
+          if (accepted) autoScore += task.points;
+          return { number: task.number, status: accepted ? 'Дұрыс' : 'Қате', points: accepted ? task.points : 0, max: task.points, answer: answer || 'Жауап жоқ', key: task.key };
+        }
+        manualPoints += task.points;
+        return { number: task.number, status: 'Мұғалім тексереді', points: 0, max: task.points, answer: answer || 'Жауап жоқ', key: task.key };
+      });
+      return { autoScore, manualPoints, review };
+    }
+
+    function finishTest(byTimer) {
+      saveCurrentAnswer();
+      clearInterval(timerId);
+      const name = el('student-name').value.trim();
+      const klass = el('student-class').value.trim();
+      const graded = gradeTest();
+      latestResult = {
+        id: Date.now(),
+        date: new Date().toLocaleString('kk-KZ'),
+        name,
+        klass,
+        grade: appData.grade,
+        section: appData.section,
+        total: appData.points,
+        autoScore: graded.autoScore,
+        manualPoints: graded.manualPoints,
+        answers: answers.slice(),
+        review: graded.review,
+        byTimer
+      };
+      const saved = JSON.parse(localStorage.getItem(resultKey) || '[]');
+      saved.unshift(latestResult);
+      localStorage.setItem(resultKey, JSON.stringify(saved));
+      showResult();
+    }
+
+    function showResult() {
+      el('quiz-screen').classList.add('hidden');
+      el('result-screen').classList.remove('hidden');
+      el('result-student').textContent = `${latestResult.name}, ${latestResult.klass} | ${latestResult.date}`;
+      el('score-circle').textContent = `${latestResult.autoScore}/${latestResult.total}`;
+      el('result-text').innerHTML = `Автоматты тексерілген балл: <strong>${latestResult.autoScore}</strong>. Мұғалім тексеретін балл: <strong>${latestResult.manualPoints}</strong>.`;
+      el('review').innerHTML = latestResult.review.map(item => {
+        const cls = item.status === 'Дұрыс' ? 'ok' : item.status === 'Қате' ? 'bad' : 'manual';
+        return `<div class="review-item">
+          <div><strong>${item.number}-тапсырма:</strong> <span class="${cls}">${item.status}</span> (${item.points}/${item.max})</div>
+          <div>Оқушы жауабы: ${escapeHtml(item.answer)}</div>
+          <div>Кілт: ${escapeHtml(item.key)}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    }
+
+    function renderResults() {
+      const data = JSON.parse(localStorage.getItem(resultKey) || '[]');
+      el('result-count').textContent = `${data.length} нәтиже`;
+      if (!data.length) {
+        el('results-table').innerHTML = '<p style="color:var(--muted)">Әзірге нәтиже жоқ.</p>';
+        return;
+      }
+      el('results-table').innerHTML = `<table>
+        <thead><tr><th>Оқушы</th><th>Сынып</th><th>Бөлім</th><th>Авто балл</th><th>Мұғалім тексереді</th><th>Күні</th></tr></thead>
+        <tbody>${data.map(row => `<tr>
+          <td>${escapeHtml(row.name)}</td>
+          <td>${escapeHtml(row.klass)}</td>
+          <td>${escapeHtml(row.section)}</td>
+          <td><strong>${row.autoScore}/${row.total}</strong></td>
+          <td>${row.manualPoints} балл</td>
+          <td>${escapeHtml(row.date)}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+    }
+
+    function exportResults() {
+      const data = JSON.parse(localStorage.getItem(resultKey) || '[]');
+      if (!data.length) return toast('Экспорттайтын нәтиже жоқ.');
+      const header = ['Аты-жөні', 'Сыныбы', 'Бөлім', 'Авто балл', 'Жалпы балл', 'Мұғалім тексеретін балл', 'Күні'];
+      const rows = data.map(row => [row.name, row.klass, row.section, row.autoScore, row.total, row.manualPoints, row.date]);
+      const csv = [header, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';')).join('\n');
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bjb_results.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    document.querySelectorAll('.mode').forEach(btn => btn.addEventListener('click', () => switchMode(btn.dataset.mode)));
+    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+      activeDoc = tab.dataset.doc;
+      document.querySelectorAll('.tab').forEach(item => item.classList.toggle('active', item === tab));
+      el('output').textContent = docs[activeDoc] || '';
+    }));
+
+    el('bjb-form').addEventListener('submit', event => {
+      event.preventDefault();
+      generate();
+    });
+    el('sample-btn').addEventListener('click', () => {
+      el('grade').value = '8';
+      el('points').value = '20';
+      el('section').value = 'Python тілінде циклдік алгоритмдерді программалау';
+      el('objectives').value = '8.3.3.1 Python программалау тілінде цикл операторларын қолдану\n8.3.2.1 алгоритм трассировкасын жүзеге асыру';
+      el('minutes').value = '25';
+      el('programming').checked = true;
+      generate();
+    });
+    el('student-open-btn').addEventListener('click', () => switchMode('student'));
+    el('clear-btn').addEventListener('click', () => {
+      el('section').value = '';
+      el('objectives').value = '';
+      el('points').value = '15';
+      generate();
+    });
+    el('copy-btn').addEventListener('click', async () => {
+      const text = docs[activeDoc] || '';
+      if (!text) return toast('Алдымен тестті жаңартыңыз.');
+      try { await navigator.clipboard.writeText(text); } catch (error) {
+        const area = document.createElement('textarea');
+        area.value = text; document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove();
+      }
+      toast('Мәтін көшірілді.');
+    });
+    el('download-btn').addEventListener('click', () => {
+      const blob = new Blob([docs[activeDoc] || ''], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'informatika_bjb.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+    el('print-btn').addEventListener('click', () => window.print());
+    el('start-test-btn').addEventListener('click', startTest);
+    el('prev-btn').addEventListener('click', () => { saveCurrentAnswer(); if (current > 0) current -= 1; renderQuestion(); });
+    el('next-btn').addEventListener('click', () => { saveCurrentAnswer(); if (current < tasks.length - 1) current += 1; renderQuestion(); });
+    el('finish-btn').addEventListener('click', () => finishTest(false));
+    el('again-btn').addEventListener('click', renderStudentStart);
+    el('save-result-btn').addEventListener('click', () => switchMode('results'));
+    el('export-results-btn').addEventListener('click', exportResults);
+    el('clear-results-btn').addEventListener('click', () => {
+      if (confirm('Барлық нәтижені өшіресіз бе?')) {
+        localStorage.removeItem(resultKey);
+        renderResults();
+      }
+    });
+
+    generate();
+  </script>
+</body>
+</html>
